@@ -11,7 +11,7 @@ EMAIL_PASSWORD = os.environ.get('EMAIL_PASSWORD')
 site = "https://www.blocket.se"
 URL_1 = site + "/annonser/hela_sverige/fordon/batar/segelbat?cg=1062"
 URL_2 = site + "/annonser/hela_sverige/fritid_hobby/musikutrustning/gitarr_bas_forstarkare?cg=6161"
-
+URL_3 = site + "/annonser/sodermanland/fordon/bilar?cg=1020&pe=1&r=12"
 session = requests.Session()
 
 def init_server():
@@ -63,6 +63,7 @@ def search_url(url):
 			print("No new ad found... ", current_time)
 		else:
 			send(ad, current_time)
+			current_ad = ad
 
 if __name__ == "__main__":
 	server = smtplib.SMTP('smtp.gmail.com', 587)
@@ -70,5 +71,7 @@ if __name__ == "__main__":
 
 	t1 = threading.Thread(target=search_url, args=(URL_1,))
 	t2 = threading.Thread(target=search_url, args=(URL_2,))
+	t3 = threading.Thread(target=search_url, args=(URL_3,))
 	t1.start()
 	t2.start()
+	t3.start()
