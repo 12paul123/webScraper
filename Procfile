@@ -1,1 +1,1 @@
-worker:python blocket.py
+worker: python blocket.py
