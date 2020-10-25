@@ -1,8 +1,9 @@
 import requests
 from bs4 import BeautifulSoup
 import time, os
-import asyncio
 import smtplib
+import threading
+import sys
 
 EMAIL_ADDRESS = os.environ.get('EMAIL_ADDRESS')
 EMAIL_PASSWORD = os.environ.get('EMAIL_PASSWORD')
@@ -19,7 +20,7 @@ def init_server():
 	server.ehlo()
 	server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
 
-async def send(ad, current_time):
+def send(ad, current_time):
 	section = "".join(ad[0]).encode("ascii", "ignore").decode("ascii")
 	subject = "Ad Found! {}, {}".format(current_time, section)
 	body = "Price: {} URL: {}{}".format(ad[1], site, ad[2])
@@ -30,14 +31,15 @@ async def send(ad, current_time):
 	except Exception as e:
 		print(e)
 		server.close()
+		sys.exit()
 
-async def parse_site(url):
+def parse_site(url):
 	page = session.get(url, verify=True)
 	soup = BeautifulSoup(page.content, "html.parser")
 	return soup
 
-async def get_latest_ad(url):
-	soup = await parse_site(url)
+def get_latest_ad(url):
+	soup = parse_site(url)
 	ad_elems = soup.find_all("article", class_="hidZFy")
 	latest_ad = ad_elems[0]
 
@@ -47,27 +49,26 @@ async def get_latest_ad(url):
 
 	return (ad_name, ad_price, ad_url)
 
-async def search_url(url):
-	current_ad = await get_latest_ad(url)
+def search_url(url):
+	current_ad = get_latest_ad(url)
 
 	while True:
-		ad = await get_latest_ad(url)
+		ad = get_latest_ad(url)
 
 		t = time.localtime()
 		current_time = time.strftime("%H:%M:%S", t)
 
 		if current_ad[0] == ad[0]:
-			await asyncio.sleep(300)
+			time.sleep(300)
 			print("No new ad found... ", current_time)
 		else:
-			await send(ad, current_time)
-
-async def main():
-	coroutines = [search_url(URL_1), search_url(URL_2)]
-	await asyncio.gather(*coroutines)
+			send(ad, current_time)
 
 if __name__ == "__main__":
 	server = smtplib.SMTP('smtp.gmail.com', 587)
 	init_server()
 
-	asyncio.run(main())
+	t1 = threading.Thread(target=search_url, args=(URL_1,))
+	t2 = threading.Thread(target=search_url, args=(URL_2,))
+	t1.start()
+	t2.start()
