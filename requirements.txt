@@ -1,5 +1,4 @@
 requests
 asyncio
 bs4
-ssl
 smtplib

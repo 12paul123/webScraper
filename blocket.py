@@ -3,7 +3,6 @@ from bs4 import BeautifulSoup
 import time, os
 import asyncio
 import smtplib
-import ssl
 
 EMAIL_ADDRESS = os.environ.get('EMAIL_ADDRESS')
 EMAIL_PASSWORD = os.environ.get('EMAIL_PASSWORD')
@@ -15,9 +14,8 @@ URL_2 = site + "/annonser/hela_sverige/fritid_hobby/musikutrustning/gitarr_bas_f
 session = requests.Session()
 
 def init_server():
-	context = ssl.create_default_context()
 	server.ehlo()
-	server.starttls(context=context)
+	server.starttls()
 	server.ehlo()
 	server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
 
