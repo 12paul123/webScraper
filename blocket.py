@@ -33,7 +33,6 @@ def send(ad, current_time):
 		print(e)
 		server.close()
 		init_server()
-		sys.exit()
 
 def parse_site(url):
 	page = session.get(url, verify=True)
