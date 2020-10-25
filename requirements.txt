@@ -1,4 +1,3 @@
 requests
 asyncio
-time
 bs4
