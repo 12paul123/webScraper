@@ -62,6 +62,7 @@ def search_url(url):
 			time.sleep(300)
 			print("No new ad found... ", current_time)
 		else:
+			print("Ad found!", current_time)
 			send(ad, current_time)
 			current_ad = ad
 
