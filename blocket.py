@@ -28,11 +28,10 @@ def send(ad, current_time):
 
 	try:
 		server.sendmail(EMAIL_ADDRESS, "opticdragonbf3@gmail.com", msg)
-		server.close()
 	except Exception as e:
 		print(e)
 		server.close()
-		init_server()
+		sys.exit()
 
 def parse_site(url):
 	page = session.get(url, verify=True)
