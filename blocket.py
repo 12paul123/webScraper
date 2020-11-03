@@ -14,6 +14,8 @@ URL_2 = site + "/annonser/hela_sverige/fritid_hobby/musikutrustning/gitarr_bas_f
 URL_3 = site + "/annonser/sodermanland/fordon/bilar?cg=1020&pe=1&r=12"
 session = requests.Session()
 
+server = smtplib.SMTP('smtp.gmail.com', 587)
+
 def init_server():
 	server.ehlo()
 	server.starttls()
@@ -28,10 +30,11 @@ def send(ad, current_time):
 
 	try:
 		server.sendmail(EMAIL_ADDRESS, "opticdragonbf3@gmail.com", msg)
-	except Exception as e:
-		print(e)
 		server.close()
-		sys.exit()
+		init_server()
+	except:
+		server = smtplib.SMTP('smtp.gmail.com', 587)
+		init_server()
 
 def parse_site(url):
 	page = session.get(url, verify=True)
@@ -59,7 +62,7 @@ def search_url(url):
 		current_time = time.strftime("%H:%M:%S", t)
 
 		if current_ad[0] == ad[0]:
-			time.sleep(300)
+			time.sleep(500)
 			print("No new ad found... ", current_time)
 		else:
 			print("Ad found!", current_time)
@@ -67,9 +70,6 @@ def search_url(url):
 			current_ad = ad
 
 if __name__ == "__main__":
-	server = smtplib.SMTP('smtp.gmail.com', 587)
-	init_server()
-
 	t1 = threading.Thread(target=search_url, args=(URL_1,))
 	t2 = threading.Thread(target=search_url, args=(URL_2,))
 	t3 = threading.Thread(target=search_url, args=(URL_3,))
